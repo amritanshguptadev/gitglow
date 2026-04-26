@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GitGlow — GitHub Profile Analyzer</title>
+  <meta name="description" content="GitGlow lets you instantly analyze any GitHub profile — repos, languages, stars, and activity — in a stunning visual dashboard." />
+  <meta property="og:title" content="GitGlow — GitHub Profile Analyzer" />
+  <meta property="og:description" content="Visualize any GitHub profile with beautiful charts and animated stats." />
+  <meta property="og:type" content="website" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ── BACKGROUND ORBS ── -->
+  <div class="bg-orbs" aria-hidden="true">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+  </div>
+
+  <!-- ── HEADER ── -->
+  <header class="site-header">
+    <div class="logo">
+      <span class="logo-icon">✦</span>
+      <span class="logo-text">Git<span class="accent">Glow</span></span>
+    </div>
+    <nav class="header-links">
+      <a href="https://github.com" target="_blank" rel="noopener">GitHub</a>
+    </nav>
+  </header>
+
+  <!-- ── HERO / SEARCH ── -->
+  <main>
+    <section class="hero" id="hero">
+      <div class="hero-badge">✦ Open Source Tool</div>
+      <h1 class="hero-title">Illuminate Your<br /><span class="gradient-text">GitHub Story</span></h1>
+      <p class="hero-sub">Enter any GitHub username and instantly explore a stunning visual breakdown of their repos, languages, stars, and activity.</p>
+
+      <div class="search-wrap" id="search-wrap">
+        <span class="search-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        </span>
+        <input
+          type="text"
+          id="username-input"
+          placeholder="e.g. torvalds, gaearon, sindresorhus…"
+          autocomplete="off"
+          spellcheck="false"
+          aria-label="GitHub username"
+        />
+        <button id="search-btn" aria-label="Analyze profile">
+          <span class="btn-text">Analyze</span>
+          <span class="btn-spinner" id="btn-spinner" hidden>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
+          </span>
+        </button>
+      </div>
+
+      <div class="search-error" id="search-error" hidden>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <span id="error-msg">User not found. Please check the username.</span>
+      </div>
+
+      <div class="example-chips">
+        <span class="chips-label">Try:</span>
+        <button class="chip" data-user="torvalds">torvalds</button>
+        <button class="chip" data-user="gaearon">gaearon</button>
+        <button class="chip" data-user="sindresorhus">sindresorhus</button>
+        <button class="chip" data-user="yyx990803">yyx990803</button>
+      </div>
+    </section>
+
+    <!-- ── DASHBOARD ── -->
+    <section class="dashboard hidden" id="dashboard">
+
+      <!-- Profile Card -->
+      <div class="profile-card" id="profile-card">
+        <div class="profile-avatar-wrap">
+          <img id="profile-avatar" src="" alt="Avatar" class="profile-avatar" />
+          <div class="avatar-ring"></div>
+        </div>
+        <div class="profile-info">
+          <h2 id="profile-name" class="profile-name"></h2>
+          <p id="profile-login" class="profile-login"></p>
+          <p id="profile-bio" class="profile-bio"></p>
+          <div class="profile-meta" id="profile-meta"></div>
+        </div>
+        <a id="profile-link" href="#" target="_blank" rel="noopener" class="profile-gh-link">
+          View on GitHub
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+        </a>
+      </div>
+
+      <!-- Stats Row -->
+      <div class="stats-grid" id="stats-grid"></div>
+
+      <!-- Charts Row -->
+      <div class="charts-row">
+        <!-- Language Donut -->
+        <div class="card chart-card" id="lang-card">
+          <h3 class="card-title">Language Breakdown</h3>
+          <div class="donut-wrap">
+            <canvas id="lang-chart" width="220" height="220"></canvas>
+            <div class="donut-center">
+              <span id="donut-label">Languages</span>
+            </div>
+          </div>
+          <ul class="lang-legend" id="lang-legend"></ul>
+        </div>
+
+        <!-- Repo Stars Bar -->
+        <div class="card chart-card" id="stars-card">
+          <h3 class="card-title">Top Repos by Stars</h3>
+          <div class="bar-chart-wrap" id="bar-chart-wrap"></div>
+        </div>
+      </div>
+
+      <!-- Top Repos Grid -->
+      <div class="section-header">
+        <h3 class="section-title">Pinned & Top Repositories</h3>
+        <span id="repo-count-badge" class="badge"></span>
+      </div>
+      <div class="repos-grid" id="repos-grid"></div>
+
+      <!-- Recent Events -->
+      <div class="section-header">
+        <h3 class="section-title">Recent Activity</h3>
+      </div>
+      <div class="activity-feed" id="activity-feed"></div>
+
+      <div class="back-wrap">
+        <button class="back-btn" id="back-btn">← Search Another Profile</button>
+      </div>
+    </section>
+  </main>
+
+  <!-- ── FOOTER ── -->
+  <footer class="site-footer">
+    <p>Built with ✦ by <strong>GitGlow</strong> &nbsp;·&nbsp; Powered by GitHub Public API &nbsp;·&nbsp; <a href="https://github.com" target="_blank" rel="noopener">Open Source</a></p>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
