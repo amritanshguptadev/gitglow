@@ -15,6 +15,7 @@ const errorMsg      = document.getElementById('error-msg');
 const hero          = document.getElementById('hero');
 const dashboard     = document.getElementById('dashboard');
 const backBtn       = document.getElementById('back-btn');
+const backBtnTop    = document.getElementById('back-btn-top');
 
 // ── LANGUAGE COLORS MAP ───────────────────────────────────────────
 const LANG_COLORS = {
@@ -384,6 +385,11 @@ usernameInput.addEventListener('keydown', e => {
   if (e.key === 'Enter') handleSearch(usernameInput.value);
 });
 
+// Clear error as user types — no stale "User not found" while typing
+usernameInput.addEventListener('input', () => {
+  if (!searchError.hidden) hideError();
+});
+
 // Chip clicks
 document.querySelectorAll('.chip').forEach(chip => {
   chip.addEventListener('click', () => {
@@ -392,16 +398,27 @@ document.querySelectorAll('.chip').forEach(chip => {
   });
 });
 
-// Back button
-backBtn.addEventListener('click', () => {
+// Shared back-navigation logic (used by both buttons)
+function goBack() {
   dashboard.classList.add('hidden');
   hero.classList.remove('hidden');
   usernameInput.value = '';
-  usernameInput.focus();
+  hideError();
+  setLoading(false);
   window.scrollTo({ top: 0, behavior: 'smooth' });
+  setTimeout(() => usernameInput.focus(), 300);
+}
+
+if (backBtn)    backBtn.addEventListener('click', goBack);
+if (backBtnTop) backBtnTop.addEventListener('click', goBack);
+
+// On load: explicitly reset state so CSS display rules don't leak through
+window.addEventListener('DOMContentLoaded', () => {
+  // Belt-and-suspenders: force hidden state regardless of CSS
+  searchError.hidden = true;
+  btnSpinner.hidden  = true;
+  btnText.hidden     = false;
+  searchBtn.disabled = false;
+  usernameInput.focus();
 });
 
-// Auto-focus on load
-window.addEventListener('DOMContentLoaded', () => {
-  usernameInput.focus();
-});
