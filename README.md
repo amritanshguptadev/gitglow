@@ -26,7 +26,7 @@
 
 ## 🚀 Live Demo
 
-👉 **[Try GitGlow →](https://gitglow.vercel.app)**
+👉 **[Try GitGlow →](https://gitglow-inky.vercel.app/)**
 
 ---
 
